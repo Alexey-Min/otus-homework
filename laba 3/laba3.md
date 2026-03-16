@@ -58,3 +58,125 @@
 
 ### Пример настроек
 
+VPC 1
+
+set pcname VPC 1
+
+ip add ress 172.168.1.1 255.255.255.0  gateway 172.168.1.10
+
+SW4 
+
+spanning-tree mode rapid-pvst
+
+spanning-tree vlan 1 root primary
+
+R12
+
+Router#sh ip route static
+S*    0.0.0.0/0 [1/0] via 172.168.5.10
+
+Router#sh ip route ospf
+O        172.168.4.0/24 [110/20] via 172.168.5.10, 00:26:59, Ethernet0/2
+O        172.168.7.0/24 [110/20] via 172.168.3.10, 00:21:33, Ethernet0/3
+O IA     172.168.8.0/24 [110/20] via 172.168.3.10, 00:09:59, Ethernet0/3
+
+Router#sh run | s r o
+router ospf 33
+ network 172.168.2.0 0.0.0.255 area 10
+ network 172.168.3.0 0.0.0.255 area 0
+ network 172.168.5.0 0.0.0.255 area 0
+
+R13
+
+Router#sh ip route static
+S*    0.0.0.0/0 [1/0] via 172.168.7.10
+
+Router#sh ip route ospf
+O        172.168.3.0/24 [110/20] via 172.168.7.10, 00:28:17, Ethernet0/2
+O        172.168.5.0/24 [110/20] via 172.168.4.10, 00:22:20, Ethernet0/3
+O IA     172.168.8.0/24 [110/20] via 172.168.7.10, 00:16:42, Ethernet0/2
+
+Router#sh run | s r o
+router ospf 33
+ network 172.168.1.0 0.0.0.255 area 10
+ network 172.168.2.0 0.0.0.255 area 10
+ network 172.168.4.0 0.0.0.255 area 0
+ network 172.168.7.0 0.0.0.255 area 0
+
+R14 
+
+router os 33
+network 172.168.4.0 0.0.0.255 area 0
+network 172.168.5.0 0.0.0.255 area 0
+network 172.168.6.0 0.0.0.255 area 101
+area 101 stub no-summary
+area 101 filter-list prefix block6 out
+ 
+Router#sh run | s r o
+router ospf 33
+ area 101 stub no-summary
+ area 101 filter-list prefix block6 out
+ network 172.168.4.0 0.0.0.255 area 0
+ network 172.168.5.0 0.0.0.255 area 0
+ network 172.168.6.0 0.0.0.255 area 101
+----------------------------------------
+ip prefix-list block6 deny 172.168.6.0/24
+ip prefix-list block6 permit 0.0.0.0/0 le 32
+
+Router#sh ip prefix-list
+ip prefix-list block6: 2 entries
+   seq 5 deny 172.168.6.0/24
+   seq 10 permit 0.0.0.0/0 le 32
+-----------------------------------------
+Router#sh ip route ospf
+O IA     172.168.1.0/24 [110/20] via 172.168.4.1, 00:32:46, Ethernet0/1
+O IA     172.168.2.0/24 [110/20] via 172.168.5.1, 00:32:46, Ethernet0/0
+                        [110/20] via 172.168.4.1, 00:32:46, Ethernet0/1
+O        172.168.3.0/24 [110/20] via 172.168.5.1, 00:32:46, Ethernet0/0
+O        172.168.7.0/24 [110/20] via 172.168.4.1, 00:32:46, Ethernet0/1
+O IA     172.168.8.0/24 [110/30] via 172.168.5.1, 00:27:13, Ethernet0/0
+                        [110/30] via 172.168.4.1, 00:27:13, Ethernet0/1
+------------------------------------------
+Router#sh ip os neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+172.168.5.1       1   FULL/DR         00:00:36    172.168.5.1     Ethernet0/0
+172.168.7.1       1   FULL/DR         00:00:38    172.168.4.1     Ethernet0/1
+172.168.6.1       1   FULL/DR         00:00:34    172.168.6.1     Ethernet0/3
+------------------------------------------
+Router#sh ip os int brief
+Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
+Et0/0        33    0               172.168.5.10/24    10    BDR   1/1
+Et0/1        33    0               172.168.4.10/24    10    BDR   1/1
+Et0/3        33    101             172.168.6.10/24    10    BDR   1/1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
