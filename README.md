@@ -1,1 +1,1 @@
-# otus-homework
+# otus-homework author Minaev Aleksey 
