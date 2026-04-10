@@ -57,4 +57,125 @@
 
 
 ### Пример настроек
+VPC 1
 
+set pcname VPC 1
+
+ip add ress 10.10.10.1 255.255.255.0  gateway 10.10.10.10
+
+SW9
+
+Switch#sh run | s ei
+router eigrp name
+ !
+ address-family ipv4 unicast autonomous-system 2042
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+  network 30.0.0.0
+  network 40.0.0.0
+  network 172.168.0.0
+  network 192.168.2.0
+  eigrp router-id 0.0.0.9
+ exit-address-family
+---------------------------------------------------
+Switch#sh ip ei nei
+EIGRP-IPv4 VR(name) Address-Family Neighbors for AS(2042)
+H   Address                 Interface              Hold Uptime   SRTT   RTO  Q  Seq
+                                                   (sec)         (ms)       Cnt Num
+3   40.40.40.2              Et0/0                    14 00:50:42   10   100  0  10
+2   30.30.30.2              Et0/1                    10 00:50:42   10   100  0  9
+1   172.168.3.10            Et0/3                    11 00:50:42    9   100  0  12
+0   192.168.2.10            Et1/0                    13 00:50:42   15   100  0  16
+---------------------------------------------------
+Switch#sh ip ei top
+EIGRP-IPv4 VR(name) Topology Table for AS(2042)/ID(0.0.0.9)
+Codes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,
+       r - reply Status, s - sia Status
+
+P 192.168.3.0/24, 3 successors, FD is 196608000
+        via 30.30.30.2 (196608000/131072000), Ethernet0/1
+        via 40.40.40.2 (196608000/131072000), Ethernet0/0
+        via 192.168.2.10 (196608000/131072000), Ethernet1/0
+P 192.168.2.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet1/0
+P 40.40.40.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet0/0
+P 192.168.0.0/22, 1 successors, FD is 327680000
+        via 172.168.3.10 (327680000/262144000), Ethernet0/3
+P 192.168.1.0/24, 1 successors, FD is 196608000
+        via 192.168.2.10 (196608000/131072000), Ethernet1/0
+P 30.30.30.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet0/1
+P 172.168.2.0/24, 3 successors, FD is 196608000
+        via 30.30.30.2 (196608000/131072000), Ethernet0/1
+        via 40.40.40.2 (196608000/131072000), Ethernet0/0
+        via 172.168.3.10 (196608000/131072000), Ethernet0/3
+P 20.20.20.0/24, 2 successors, FD is 196608000
+        via 30.30.30.2 (196608000/131072000), Ethernet0/1
+        via 40.40.40.2 (196608000/131072000), Ethernet0/0
+P 172.168.3.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet0/3
+P 172.168.1.0/24, 1 successors, FD is 196608000
+        via 172.168.3.10 (196608000/131072000), Ethernet0/3
+P 172.168.0.0/22, 1 successors, FD is 327680000
+        via 192.168.2.10 (327680000/262144000), Ethernet1/0
+P 10.10.10.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet0/2
+
+R17
+Router#sh ip ei nei
+EIGRP-IPv4 VR(name) Address-Family Neighbors for AS(2042)
+H   Address                 Interface              Hold Uptime   SRTT   RTO  Q  Seq
+                                                   (sec)         (ms)       Cnt Num
+2   172.168.3.1             Et0/0                    13 00:44:25    4   100  0  9
+1   172.168.2.1             Et0/2                    14 00:44:28    1   100  0  12
+0   172.168.1.10            Et0/1                    12 00:44:36 1015  5000  0  14
+----------------------------------------------------------
+Router#sh run | s ei
+router eigrp name
+ !
+ address-family ipv4 unicast autonomous-system 2042
+  !
+  af-interface Ethernet0/1
+   summary-address 172.168.0.0 255.255.252.0
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+  network 172.168.0.0
+  eigrp router-id 0.0.0.17
+ exit-address-family
+--------------------------------------------------------
+Router#sh ip ei top
+EIGRP-IPv4 VR(name) Topology Table for AS(2042)/ID(0.0.0.17)
+Codes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,
+       r - reply Status, s - sia Status
+
+P 192.168.3.0/24, 1 successors, FD is 196608000
+        via 172.168.2.1 (196608000/131072000), Ethernet0/2
+P 192.168.2.0/24, 1 successors, FD is 196608000
+        via 172.168.3.1 (196608000/131072000), Ethernet0/0
+P 40.40.40.0/24, 2 successors, FD is 196608000
+        via 172.168.2.1 (196608000/131072000), Ethernet0/2
+        via 172.168.3.1 (196608000/131072000), Ethernet0/0
+P 192.168.0.0/22, 1 successors, FD is 262144000
+        via 172.168.1.10 (262144000/196608000), Ethernet0/1
+P 192.168.1.0/24, 1 successors, FD is 196608000
+        via 172.168.1.10 (196608000/131072000), Ethernet0/1
+P 30.30.30.0/24, 2 successors, FD is 196608000
+        via 172.168.2.1 (196608000/131072000), Ethernet0/2
+        via 172.168.3.1 (196608000/131072000), Ethernet0/0
+P 172.168.2.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet0/2
+P 20.20.20.0/24, 1 successors, FD is 196608000
+        via 172.168.2.1 (196608000/131072000), Ethernet0/2
+P 172.168.3.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet0/0
+P 172.168.1.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet0/1
+### P 172.168.0.0/22, 1 successors, FD is 131072000
+###        via Summary (131072000/0), Null0
+P 10.10.10.0/24, 1 successors, FD is 196608000
+        via 172.168.3.1 (196608000/131072000), Ethernet0/0
