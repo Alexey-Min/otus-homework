@@ -265,6 +265,13 @@ H   Address                 Interface              Hold Uptime   SRTT   RTO  Q  
                                                    (sec)         (ms)       Cnt Num
 1   192.168.1.1             Et0/0                    14 01:02:19    4   100  0  15
 0   172.168.1.1             Et0/1                    13 01:02:20    9   100  0  11
+-------------------------------------------------------
+Router#ping 10.10.10.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.1, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/2 ms
+
 
 R32
 Router#sh ip route
@@ -274,12 +281,7 @@ S*    0.0.0.0/0 [1/0] via 192.168.4.10
       192.168.4.0/24 is variably subnetted, 2 subnets, 2 masks
 C        192.168.4.0/24 is directly connected, Ethernet0/0
 L        192.168.4.1/32 is directly connected, Ethernet0/0
-----------------------------------------------------------
-Router#ping 10.10.10.1
-Type escape sequence to abort.
-Sending 5, 100-byte ICMP Echos to 10.10.10.1, timeout is 2 seconds:
-!!!!!
-Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/2 ms
+
 
 ### Выполнение:
 1 В офисе С.-Петербург настроено EIGRP.
