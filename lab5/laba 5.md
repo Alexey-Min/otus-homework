@@ -62,6 +62,14 @@ VPC 1
 set pcname VPC 1
 
 ip add ress 10.10.10.1 255.255.255.0  gateway 10.10.10.10
+-----------------------------------------------
+VPC1> ping 20.20.20.1
+
+84 bytes from 20.20.20.1 icmp_seq=1 ttl=62 time=1.574 ms
+84 bytes from 20.20.20.1 icmp_seq=2 ttl=62 time=3.514 ms
+84 bytes from 20.20.20.1 icmp_seq=3 ttl=62 time=2.545 ms
+84 bytes from 20.20.20.1 icmp_seq=4 ttl=62 time=1.277 ms
+84 bytes from 20.20.20.1 icmp_seq=5 ttl=62 time=1.213 ms
 
 SW9
 
@@ -179,3 +187,102 @@ P 172.168.1.0/24, 1 successors, FD is 131072000
 ###        via Summary (131072000/0), Null0
 P 10.10.10.0/24, 1 successors, FD is 196608000
         via 172.168.3.1 (196608000/131072000), Ethernet0/0
+
+R16
+Router#sh run | s ei
+router eigrp name
+ !
+ address-family ipv4 unicast autonomous-system 2042
+  !
+  af-interface Ethernet0/1
+   summary-address 192.168.0.0 255.255.252.0
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+  network 192.168.1.0
+  network 192.168.2.0
+  network 192.168.3.0
+  eigrp router-id 0.0.0.16
+ exit-address-family
+-------------------------------------------------------
+Router#sh ip ei nei
+EIGRP-IPv4 VR(name) Address-Family Neighbors for AS(2042)
+H   Address                 Interface              Hold Uptime   SRTT   RTO  Q  Seq
+                                                   (sec)         (ms)       Cnt Num
+2   192.168.2.1             Et0/2                    14 00:59:17   16   100  0  12
+1   192.168.3.1             Et0/0                    11 00:59:20    6   100  0  11
+0   192.168.1.10            Et0/1                    13 00:59:27  658  3948  0  15
+-------------------------------------------------------
+Router#sh ip ei top
+EIGRP-IPv4 VR(name) Topology Table for AS(2042)/ID(0.0.0.16)
+Codes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,
+       r - reply Status, s - sia Status
+
+P 192.168.3.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet0/0
+P 192.168.2.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet0/2
+P 40.40.40.0/24, 2 successors, FD is 196608000
+        via 192.168.2.1 (196608000/131072000), Ethernet0/2
+        via 192.168.3.1 (196608000/131072000), Ethernet0/0
+### P 192.168.0.0/22, 1 successors, FD is 131072000
+###        via Summary (131072000/0), Null0
+P 192.168.1.0/24, 1 successors, FD is 131072000
+        via Connected, Ethernet0/1
+P 30.30.30.0/24, 2 successors, FD is 196608000
+        via 192.168.2.1 (196608000/131072000), Ethernet0/2
+        via 192.168.3.1 (196608000/131072000), Ethernet0/0
+P 172.168.2.0/24, 1 successors, FD is 196608000
+        via 192.168.3.1 (196608000/131072000), Ethernet0/0
+P 20.20.20.0/24, 1 successors, FD is 196608000
+        via 192.168.3.1 (196608000/131072000), Ethernet0/0
+P 172.168.3.0/24, 1 successors, FD is 196608000
+        via 192.168.2.1 (196608000/131072000), Ethernet0/2
+P 172.168.1.0/24, 1 successors, FD is 196608000
+        via 192.168.1.10 (196608000/131072000), Ethernet0/1
+P 172.168.0.0/22, 1 successors, FD is 262144000
+        via 192.168.1.10 (262144000/196608000), Ethernet0/1
+P 10.10.10.0/24, 1 successors, FD is 196608000
+        via 192.168.2.1 (196608000/131072000), Ethernet0/2
+
+R18
+Router#sh run | s ei
+router eigrp name
+ !
+ address-family ipv4 unicast autonomous-system 2042
+  !
+  topology base
+  exit-af-topology
+  network 172.168.0.0
+  network 192.168.1.0
+  eigrp router-id 0.0.0.18
+ exit-address-family
+--------------------------------------------------------
+Router#sh ip ei nei
+EIGRP-IPv4 VR(name) Address-Family Neighbors for AS(2042)
+H   Address                 Interface              Hold Uptime   SRTT   RTO  Q  Seq
+                                                   (sec)         (ms)       Cnt Num
+1   192.168.1.1             Et0/0                    14 01:02:19    4   100  0  15
+0   172.168.1.1             Et0/1                    13 01:02:20    9   100  0  11
+
+R32
+Router#sh ip route
+Gateway of last resort is 192.168.4.10 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 192.168.4.10
+      192.168.4.0/24 is variably subnetted, 2 subnets, 2 masks
+C        192.168.4.0/24 is directly connected, Ethernet0/0
+L        192.168.4.1/32 is directly connected, Ethernet0/0
+----------------------------------------------------------
+Router#ping 10.10.10.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.1, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/2 ms
+
+### Выполнение:
+1 В офисе С.-Петербург настроено EIGRP.
+2 R32 получает только маршрут по умолчанию.
+3 R16-17 анонсируют только суммарные префиксы.
+4 Используется EIGRP named-mode для настройки сети.
