@@ -88,5 +88,44 @@
 
 ### Пример настроек
 
+R12
+
+Router#sh run | s bgp
+router bgp 1001
+ bgp log-neighbor-changes
+ network 172.168.7.0 mask 255.255.255.0
+ network 172.168.10.0 mask 255.255.255.0
+ neighbor 172.168.7.10 remote-as 1001
+ neighbor 172.168.10.10 remote-as 1001
+
+R13
+
+Router#sh run | s bgp
+router bgp 1001
+ bgp log-neighbor-changes
+ network 172.168.8.0 mask 255.255.255.0
+ network 172.168.9.0 mask 255.255.255.0
+ neighbor 172.168.8.10 remote-as 1001
+ neighbor 172.168.9.10 remote-as 1001
+
+R14
+
+Router#sh run | s bgp
+router bgp 1001
+ bgp log-neighbor-changes
+ network 172.168.7.0 mask 255.255.255.0
+ network 172.168.9.0 mask 255.255.255.0
+ network 172.168.11.0 mask 255.255.255.0
+ neighbor 172.168.7.1 remote-as 1001
+ neighbor 172.168.9.1 remote-as 1001
+ neighbor 172.168.11.10 remote-as 101
+ neighbor 172.168.15.10 remote-as 301
+ neighbor 172.168.15.10 route-map PREF in
+------------------------------------------
+Router#sh run | s route-map
+ neighbor 172.168.15.10 route-map PREF in
+route-map PREF permit 10
+ set local-preference 90
+
 
 
