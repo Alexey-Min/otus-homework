@@ -80,12 +80,142 @@
 
 | R18          | l0        | 10.10.18.1/24   | 10.10.18.0/24
 
+### Пример настроек
 
+R14
 
+Router#sh run | s bgp
+router bgp 1001
+ bgp router-id 10.10.14.1
+ bgp log-neighbor-changes
+ network 10.10.14.0 mask 255.255.255.0
+ redistribute connected
+ neighbor 172.168.1.2 remote-as 1001
+ neighbor 172.168.2.10 remote-as 101
+ neighbor 172.168.2.10 prefix-list anons out                         - что бы не появилось транзитного трафика 
+ neighbor 172.168.2.10 filter-list 11 in                             - что бы не появилось транзитного трафика
+--------------------------------------------------
+Router#sh ip bgp
+     Network          Next Hop            Metric LocPrf Weight Path
+ *>  10.10.14.0/24    0.0.0.0                  0         32768 i
+ *>i 10.10.15.0/24    172.168.1.2              0    100      0 i
+ * i 172.168.1.0/24   172.168.1.2              0    100      0 ?
+ *>                   0.0.0.0                  0         32768 ?
+ *>  172.168.2.0/24   0.0.0.0                  0         32768 ?
+ *>i 172.168.3.0/24   172.168.1.2              0    100      0 ?
+--------------------------------------------------
+Router#sh ip as-path-access-list
+AS path access list 11
+    permit ^$
+    permit ^1001_
+    permit _1001_
+    permit _1001$
+----------------------------------------------------
+Router#sh ip prefix-list
+ip prefix-list anons: 1 entries
+   seq 10 permit 172.168.1.0/24 le 32
+-----------------------------------------------------
+Router#sh route-map
+route-map filter, permit, sequence 10
+  Match clauses:
+    as-path (as-path filter): 11
+ 
+R15
 
+Router#sh run | s bgp
+router bgp 1001
+ bgp router-id 10.10.15.1
+ bgp log-neighbor-changes
+ network 10.10.15.0 mask 255.255.255.0
+ redistribute connected
+ neighbor 172.168.1.1 remote-as 1001
+ neighbor 172.168.3.10 remote-as 301
+ neighbor 172.168.3.10 prefix-list anons out                   - что бы не появилось транзитного трафика
+ neighbor 172.168.3.10 filter-list 10 in                       - что бы не появилось транзитного трафика
+--------------------------------------------
+Router#sh ip prefix-list
+ip prefix-list anons: 1 entries
+   seq 10 permit 172.168.1.0/24 le 32
+--------------------------------------------
+Router#sh ip as-path-access-list
+AS path access list 10
+    permit ^$
+    permit ^1001_
+    permit _1001_
+    permit _1001$
+--------------------------------------------
+Router#sh ip bgp
+  Network          Next Hop            Metric LocPrf Weight Path
+ *>i 10.10.14.0/24    172.168.1.1              0    100      0 i
+ *>  10.10.15.0/24    0.0.0.0                  0         32768 i
+ * i 172.168.1.0/24   172.168.1.1              0    100      0 ?
+ *>                   0.0.0.0                  0         32768 ?
+ *>i 172.168.2.0/24   172.168.1.1              0    100      0 ?
+ *>  172.168.3.0/24   0.0.0.0                  0         32768 ?
+----------------------------------------------------------------------
+Router#sh route-map
+route-map filter, permit, sequence 10
+  Match clauses:
+    as-path (as-path filter): 10
 
+R22
 
+Router#sh run | s bgp
+router bgp 101
+ bgp router-id 10.10.22.1
+ bgp log-neighbor-changes
+ network 0.0.0.0
+ network 10.10.22.0 mask 255.255.255.0
+ redistribute connected
+ neighbor 172.168.2.1 remote-as 1001
+ neighbor 172.168.2.1 prefix-list OTD out                             - отдается только маршрут по умалчанию
+ neighbor 172.168.4.1 remote-as 301
+ neighbor 172.168.4.1 next-hop-self
+ neighbor 172.168.5.2 remote-as 520
+--------------------------------------------
+Router#sh ip bgp
+   Network          Next Hop            Metric LocPrf Weight Path
+ *   10.10.18.0/24    172.168.4.1                            0 301 520 2042 i
+ *>                   172.168.5.2                            0 520 2042 i
+ *   10.10.21.0/24    172.168.5.2                            0 520 301 i
+ *>                   172.168.4.1              0             0 301 i
+ *>  10.10.22.0/24    0.0.0.0                  0         32768 i
+ *   10.10.23.0/24    172.168.4.1                            0 301 520 i
+ *>                   172.168.5.2              0             0 520 i
+ *   10.10.24.0/24    172.168.4.1                            0 301 520 i
+ *>                   172.168.5.2                            0 520 i
+ *   10.10.25.0/24    172.168.4.1                            0 301 520 i
+ *>                   172.168.5.2                            0 520 i
+ *>  10.10.26.0/24    172.168.5.2                            0 520 i
+ *                    172.168.4.1                            0 301 520 i
+ *   172.168.1.0/24   172.168.4.1                            0 301 1001 ?
+ *>                   172.168.2.1              0             0 1001 ?
+ *>  172.168.2.0/24   0.0.0.0                  0         32768 ?
+ *   172.168.3.0/24   172.168.5.2                            0 520 301 ?
+ *>                   172.168.4.1              0             0 301 ?
+ *   172.168.4.0/24   172.168.4.1              0             0 301 ?
+ *>                   0.0.0.0                  0         32768 ?
+ *>  172.168.5.0/24   0.0.0.0                  0         32768 ?
+ *   172.168.6.0/24   172.168.5.2                            0 520 ?
+ *>                   172.168.4.1              0             0 301 ?
+ *   172.168.7.0/24   172.168.4.1                            0 301 520 ?
+ *>                   172.168.5.2                            0 520 ?
+ *   172.168.8.0/24   172.168.4.1                            0 301 520 ?
+ *>                   172.168.5.2                            0 520 ?
+ *   172.168.9.0/24   172.168.4.1                            0 301 520 ?
+ *>                   172.168.5.2                            0 520 ?
+ *   172.168.10.0/24  172.168.4.1                            0 301 520 ?
+ *>                   172.168.5.2                            0 520 ?
+ *   172.168.11.0/24  172.168.4.1                            0 301 520 ?
+ *>                   172.168.5.2                            0 520 ?
+ *>  172.168.12.0/24  172.168.5.2                            0 520 ?
+ *                    172.168.4.1                            0 301 520 ?
+--------------------------------------------------------------------------
+Router#sh ip prefix-list
+ip prefix-list OTD: 1 entries
+   seq 5 permit 0.0.0.0/0 le 32
 
+R21
 
 
 
