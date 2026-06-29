@@ -37,14 +37,18 @@
 
 ### Пример настроек
 
-R1
+R4
 
-Router(config)#do ping 172.168.3.2
+Router#ping 172.168.6.1
 Type escape sequence to abort.
-Sending 5, 100-byte ICMP Echos to 172.168.3.2, timeout is 2 seconds:
+Sending 5, 100-byte ICMP Echos to 172.168.6.1, timeout is 2 seconds:
 !!!!!
 Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/1 ms
-------------------------------------------------------------------
+Router#ping 172.168.4.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 172.168.4.1, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/2 ms
 
 
 
