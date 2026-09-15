@@ -333,7 +333,7 @@ S   1111:CCC::/36 [1/0]
      via 1111:FFF:1:1::1
 
 Router#sh run
-ipv6 route 1111:CCC::/36 1111:FFF:1:1::1               --------Организуете IPv6 unicast связность между пограничными роутерами офисов Москва и С.-Петербург.
+ipv6 route 1111:CCC::/36 1111:FFF:1:1::1               --------Организовал IPv6 unicast связность между пограничными роутерами офисов Москва и С.-Петербург.
 ipv6 route 2222:EEE::/36 2222:EEE:1:1::2
 -------------------------------------------------------
 Router#sh run | s bgp
@@ -341,7 +341,7 @@ router bgp 520
  bgp router-id 2.4.0.0
  bgp log-neighbor-changes
  no bgp default ipv4-unicast
- neighbor 1111:FFF:1:1::1 remote-as 301                ---------Настроите eBGP IPv6 unicast между Ламас и Триада.
+ neighbor 1111:FFF:1:1::1 remote-as 301                ---------Настроил eBGP IPv6 unicast между Ламас и Триада.
  neighbor 2222:BBB:1:1::1 remote-as 520
  neighbor 2222:DDD:1:1::2 remote-as 520
  neighbor 2222:EEE:1:1::2 remote-as 2042               ---------Настроил eBGP IPv6 unicast между офисом С.-Петербург и провайдером Триада.
@@ -488,7 +488,145 @@ B   2222:EEE::/36 [200/0]
 B   2222:FFF::/36 [200/0]
      via 2222:CCC:1:1::2
 
+R26
 
+Router#sh ipv6 int br
+Ethernet0/0            [up/up]
+    FE80::A8BB:CCFF:FE01:A000
+    2222:DDD:1:1::2
+Ethernet0/1            [administratively down/down]
+    unassigned
+Ethernet0/2            [up/up]
+    FE80::A8BB:CCFF:FE01:A020
+    2222:CCC:1:1::2
+Ethernet0/3            [up/up]
+    FE80::A8BB:CCFF:FE01:A030
+    2222:FFF:1:1::1
+-------------------------------------------------------
+Router#sh run | s bgp
+router bgp 520
+ bgp router-id 2.6.0.0
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 2222:CCC:1:1::1 remote-as 520
+ neighbor 2222:DDD:1:1::1 remote-as 520
+ neighbor 2222:FFF:1:1::2 remote-as 2042
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute connected
+  neighbor 2222:CCC:1:1::1 activate
+  neighbor 2222:CCC:1:1::1 route-reflector-client     ----Настроил iBGP IPv6 unicast в провайдере Триада, с использованием RR. 
+  neighbor 2222:CCC:1:1::1 next-hop-self all
+  neighbor 2222:DDD:1:1::1 activate
+  neighbor 2222:FFF:1:1::2 activate
+ exit-address-family
+------------------------------------------------------
+Router#sh ipv6 route bgp
+B   1111:AAA::/36 [200/0]
+     via 2222:DDD:1:1::1
+B   1111:BBB::/36 [200/0]
+     via 2222:DDD:1:1::1
+B   1111:CCC::/36 [200/0]
+     via 2222:DDD:1:1::1
+B   1111:DDD::/36 [200/0]
+     via 2222:DDD:1:1::1
+B   1111:EEE::/36 [200/0]
+     via 2222:DDD:1:1::1
+B   1111:FFF::/36 [200/0]
+     via 2222:DDD:1:1::1
+B   2222:AAA::/36 [200/0]
+     via 2222:DDD:1:1::1
+B   2222:BBB::/36 [200/0]
+     via 2222:DDD:1:1::1
+B   2222:EEE::/36 [200/0]
+     via 2222:DDD:1:1::1
+
+R18
+
+Router#sh ipv6 int br
+Ethernet0/2            [up/up]
+    FE80::A8BB:CCFF:FE01:2020
+    2222:EEE:1:1::2
+Ethernet0/3            [up/up]
+    FE80::A8BB:CCFF:FE01:2030
+    2222:FFF:1:1::2
+----------------------------------------
+Router#sh run
+ipv6 route 1111:CCC::/36 2222:EEE:1:1::1  -------Организовал IPv6 unicast связность между пограничными роутерами офисов Москва и С.-Петербург.
+
+Router#sh ipv6 route static
+S   1111:CCC::/36 [1/0]
+     via 2222:EEE:1:1::1
+-----------------------------------------
+Router#sh run | s bgp
+router bgp 2042
+ bgp router-id 1.8.0.0
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 2222:EEE:1:1::1 remote-as 520   -------Настроил eBGP IPv6 unicast между офисом С.-Петербург и провайдером Триада.
+ neighbor 2222:FFF:1:1::1 remote-as 520
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute connected
+  network 2222:EEE:1:1::/64
+  neighbor 2222:EEE:1:1::1 activate
+  neighbor 2222:FFF:1:1::1 activate
+ exit-address-family
+----------------------------------------
+Router#sh ipv6 route bgp
+B   1111:AAA::/36 [20/0]
+     via FE80::A8BB:CCFF:FE01:A030, Ethernet0/3
+B   1111:BBB::/36 [20/0]
+     via FE80::A8BB:CCFF:FE01:A030, Ethernet0/3
+B   1111:DDD::/36 [20/0]
+     via FE80::A8BB:CCFF:FE01:A030, Ethernet0/3
+B   1111:EEE::/36 [20/0]
+     via FE80::A8BB:CCFF:FE01:8030, Ethernet0/2
+B   1111:FFF::/36 [20/0]
+     via FE80::A8BB:CCFF:FE01:8030, Ethernet0/2
+B   2222:AAA::/36 [20/0]
+     via FE80::A8BB:CCFF:FE01:8030, Ethernet0/2
+B   2222:BBB::/36 [20/0]
+     via FE80::A8BB:CCFF:FE01:8030, Ethernet0/2
+B   2222:CCC::/36 [20/0]
+     via FE80::A8BB:CCFF:FE01:8030, Ethernet0/2
+B   2222:DDD::/36 [20/0]
+     via FE80::A8BB:CCFF:FE01:8030, Ethernet0/2
+-----------------------------------------------
+Router#ping 2222:bbb:1:1::1                                              ---------Все сети IPv6 в лабораторной работе имеют связность между собой.
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 2222:BBB:1:1::1, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/1 ms
+
+Router#ping 1111:ddd:1:1::2
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 1111:DDD:1:1::2, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 2/3/5 ms
+
+Router#ping 1111:aaa:1:1::1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 1111:AAA:1:1::1, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/2 ms
+
+### Выполнение
+
+Настроил eBGP IPv6 unicast между офисом Москва и двумя провайдерами - Киторн и Ламас.
+Настроил eBGP IPv6 unicast между провайдерами Киторн и Ламас.
+Настроил eBGP IPv6 unicast между Ламас и Триада.
+Настроил eBGP IPv6 unicast между офисом С.-Петербург и провайдером Триада.
+Организовал IPv6 unicast связность между пограничными роутерами офисов Москва и С.-Петербург.
+Настроил iBGP IPv6 unicast в офисе Москва между маршрутизаторами R14 и R15.
+Настроил iBGP IPv6 unicast в провайдере Триада, с использованием RR.
+Все сети IPv6 в лабораторной работе имеют связность между собой.
 
 
 
