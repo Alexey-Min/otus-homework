@@ -6,7 +6,7 @@
 Настроите NAT(PAT) на R18. Трансляция должна осуществляться в пул из 5 адресов автономной системы AS2042.
 Настроите статический NAT для R20.
 Настроите NAT так, чтобы R19 был доступен с любого узла для удаленного управления.
-5*. Настроите статический NAT(PAT) для офиса Чокурдах.
+Настроите статический NAT(PAT) для офиса Чокурдах.
 Настроите для IPv4 DHCP сервер в офисе Москва на маршрутизаторах R12 и R13. VPC1 и VPC7 должны получать сетевые настройки по DHCP.
 Настроите NTP сервер на R12 и R13. Все устройства в офисе Москва должны синхронизировать время с R12 и R13.
 Все офисы в лабораторной работе должны иметь IP связность.
@@ -168,12 +168,6 @@ interface Ethernet0/3
  ip address 172.168.7.2 255.255.255.0
  ip ospf 1001 area 0
  ntp broadcast
-------------------------------------------------------------
-Router#ping 192.168.26.2                                            -------------Все офисы в лабораторной работе должны иметь IP связность.
-Type escape sequence to abort.
-Sending 5, 100-byte ICMP Echos to 192.168.26.2, timeout is 2 seconds:
-!!!!!
-Success rate is 100 percent (5/5), round-trip min/avg/max = 2/2/3 ms
 
 R13
 
@@ -250,8 +244,8 @@ router bgp 1001
 no ip http server
 no ip http secure-server
 ip nat pool mos14 192.168.10.2 192.168.10.2 netmask 255.255.255.0           ----------Настроите NAT(PAT) на R14 и R15. Трансляция должна осуществляться в адрес автономной системы AS1001.
-ip nat inside source list 2 pool mos14 overload                             ----------Настроите NAT так, чтобы R19 был доступен с любого узла для удаленного управления.
-ip nat inside source static 172.168.8.2 192.168.40.10
+ip nat inside source list 2 pool mos14 overload                             
+ip nat inside source static 172.168.8.2 192.168.40.10                       ----------Настроите NAT так, чтобы R19 был доступен с любого узла для удаленного управления.
 ip route 0.0.0.0 0.0.0.0 192.168.10.1
 ip route 172.168.1.0 255.255.255.0 172.168.3.2
 ip route 172.168.2.0 255.255.255.0 172.168.6.2
@@ -290,7 +284,7 @@ CEF Translated packets: 0, CEF Punted packets: 0
 Expired translations: 0
 Dynamic mappings:
 -- Inside Source
-[Id: 2] access-list 2 pool mos14 refcount 0                                   ---------------Настроите NAT(PAT) на R14 и R15. Трансляция должна осуществляться в адрес автономной системы AS1001.
+[Id: 2] access-list 2 pool mos14 refcount 0                                   
  pool mos14: netmask 255.255.255.0
         start 192.168.10.2 end 192.168.10.2
         type generic, total addresses 1, allocated 0 (0%), misses 0
@@ -387,7 +381,7 @@ CEF Translated packets: 0, CEF Punted packets: 0
 Expired translations: 0
 Dynamic mappings:
 -- Inside Source
-[Id: 1] access-list 2 pool mos refcount 0                                  -----------Настроите NAT(PAT) на R14 и R15. Трансляция должна осуществляться в адрес автономной системы AS1001.
+[Id: 1] access-list 2 pool mos refcount 0                                  
  pool mos: netmask 255.255.255.0
         start 192.168.9.2 end 192.168.9.2
         type generic, total addresses 1, allocated 0 (0%), misses 0
@@ -595,6 +589,15 @@ Sending 5, 100-byte ICMP Echos to 192.168.26.2, timeout is 2 seconds:
 !!!!!
 Success rate is 100 percent (5/5), round-trip min/avg/max = 2/2/3 ms
 
+### Выполнение:
+Настроил NAT(PAT) на R14 и R15. Трансляция осуществляться в адрес автономной системы AS1001.
+Настроил NAT(PAT) на R18. Трансляция осуществляться в пул из 5 адресов автономной системы AS2042.
+Настроил статический NAT для R20.
+Настроил NAT так, что R19 доступен с любого узла для удаленного управления.
+Настроил статический NAT(PAT) для офиса Чокурдах.
+Настроил для IPv4 DHCP сервер в офисе Москва на маршрутизаторах R12 и R13. VPC1 и VPC7 получают сетевые настройки по DHCP.
+Настроил NTP сервер на R12 и R13. Все устройства в офисе Москва синхронизируют время с R12 и R13.
+Все офисы в лабораторной работе имеют IP связность.
 
 
 
