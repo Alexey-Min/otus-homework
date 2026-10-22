@@ -96,6 +96,15 @@ interface Tunnel15                                                     ---------
  keepalive 50 10
  tunnel source 192.168.1.1
  tunnel destination 192.168.3.2
+ 
+ router bgp 1001
+ bgp router-id 1.5.0.0
+ bgp log-neighbor-changes
+ network 192.168.1.1 mask 255.255.255.255
+ network 192.168.100.1 mask 255.255.255.255
+ network 192.168.200.1 mask 255.255.255.255
+ redistribute connected
+ neighbor 192.168.1.2 remote-as 301
 -----------------------------------------------------------------------
 Router#sh int tun 15
 Tunnel15 is up, line protocol is down
@@ -211,6 +220,18 @@ interface Tunnel18                                                           ---
  keepalive 50 10
  tunnel source 192.168.3.2
  tunnel destination 192.168.1.1
+
+ router bgp 2042
+ bgp router-id 1.8.0.0
+ bgp log-neighbor-changes
+ network 192.168.3.2 mask 255.255.255.255
+ network 192.168.4.2 mask 255.255.255.255
+ network 192.168.100.2 mask 255.255.255.255
+ redistribute connected
+ neighbor 192.168.3.1 remote-as 520
+ neighbor 192.168.3.1 next-hop-self
+ neighbor 192.168.4.1 remote-as 520
+ neighbor 192.168.4.1 next-hop-self
 ----------------------------------------------------------------------------
 Router#sh int tun 18
 Tunnel18 is up, line protocol is down
@@ -259,6 +280,15 @@ interface Tunnel200                                                             
  ip tcp adjust-mss 1360
  tunnel source 192.168.6.2
  tunnel mode gre multipoint
+
+ router bgp 203
+ bgp log-neighbor-changes
+ network 192.168.6.0
+ network 192.168.200.3 mask 255.255.255.255
+ redistribute connected
+ neighbor 192.168.6.1 remote-as 520
+ neighbor 192.168.7.1 remote-as 520
+ neighbor 192.168.7.1 next-hop-self
 ---------------------------------------------------------------------------------------
 Router#sh int tun 200
 Tunnel200 is up, line protocol is up
@@ -339,6 +369,14 @@ interface Tunnel200                                                          ---
  ip tcp adjust-mss 1360
  tunnel source 192.168.5.2
  tunnel mode gre multipoint
+
+ router bgp 202
+ bgp router-id 1.0.0.0
+ bgp log-neighbor-changes
+ network 192.168.5.2 mask 255.255.255.255
+ network 192.168.200.2 mask 255.255.255.255
+ redistribute connected
+ neighbor 192.168.5.1 remote-as 520
 --------------------------------------------------------------------------------
 Router#sh int tun 200
 Tunnel200 is up, line protocol is up
