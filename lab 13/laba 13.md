@@ -60,7 +60,7 @@
 
 R15
 
-R15#ping 192.168.3.2
+R15#ping 192.168.3.2                                                 ---------------Все узлы в офисах в лабораторной работе должны иметь IP связность.
 Type escape sequence to abort.
 Sending 5, 100-byte ICMP Echos to 192.168.3.2, timeout is 2 seconds:
 !!!!!
@@ -96,11 +96,11 @@ Sending 5, 100-byte ICMP Echos to 192.168.200.3, timeout is 2 seconds:
 !!!!!
 Success rate is 100 percent (5/5), round-trip min/avg/max = 6/6/7 ms
 -----------------------------------------------------------------------
-interface Tunnel123
+interface Tunnel123                                                    
  ip address 192.168.100.1 255.255.255.255
  tunnel source Ethernet0/2
  tunnel destination 192.168.3.2
- tunnel protection ipsec profile TUN123
+ tunnel protection ipsec profile TUN123                                --------------Настроите GRE поверх IPSec между офисами Москва и С.-Петербург.
 -----------------------------------------------------------------------
 R15#sh int tun 123
 Tunnel123 is up, line protocol is up
@@ -140,7 +140,7 @@ Tunnel123 is up, line protocol is up
      0 unknown protocol drops
      0 output buffer failures, 0 output buffers swapped out
 ----------------------------------------------------------------------
-interface Tunnel456
+interface Tunnel456    
  ip address 192.168.200.1 255.255.255.0
  no ip redirects
  ip mtu 1400
@@ -151,7 +151,7 @@ interface Tunnel456
  tunnel source Ethernet0/2
  tunnel mode gre multipoint
  tunnel key 200
- tunnel protection ipsec profile TUN456
+ tunnel protection ipsec profile TUN456                               -----------Настроите DMVPN поверх IPSec между Москва и Чокурдах, Лабытнанги
 ----------------------------------------------------------------------
 R15#sh int tun 456
 Tunnel456 is up, line protocol is up
@@ -256,7 +256,7 @@ interface Tunnel123
  ip address 192.168.100.2 255.255.255.0
  tunnel source Ethernet0/2
  tunnel destination 192.168.1.1
- tunnel protection ipsec profile TUN123
+ tunnel protection ipsec profile TUN123             --------------Настроите GRE поверх IPSec между офисами Москва и С.-Петербург.
  ---------------------------------------
 R18#sh int tun 123
 Tunnel123 is up, line protocol is up
@@ -386,7 +386,7 @@ interface Tunnel456
  tunnel source Ethernet0/0
  tunnel mode gre multipoint
  tunnel key 200
- tunnel protection ipsec profile TUN456
+ tunnel protection ipsec profile TUN456                       -----------Настроите DMVPN поверх IPSec между Москва и Чокурдах, Лабытнанги
 -------------------------------------------------------------
 R1#sh crypto pki certificates
 Certificate
@@ -497,7 +497,7 @@ interface Tunnel456
  tunnel source Ethernet0/0
  tunnel mode gre multipoint
  tunnel key 200
- tunnel protection ipsec profile TUN456
+ tunnel protection ipsec profile TUN456                     -----------Настроите DMVPN поверх IPSec между Москва и Чокурдах, Лабытнанги
 ------------------------------------------------------------
 R2#sh crypto pki certificates
 Certificate
