@@ -7,6 +7,7 @@
 Настроите GRE поверх IPSec между офисами Москва и С.-Петербург.
 Настроите DMVPN поверх IPSec между Москва и Чокурдах, Лабытнанги.
 Все узлы в офисах в лабораторной работе должны иметь IP связность.
+Для IPSec использовать CA и сертификаты.
 
 ### Общая таблица сетевых адресов на интерфейсах.
 
@@ -217,7 +218,7 @@ crypto pki trustpoint otus
  revocation-check none
  rsakeypair R15KEY
 ----------------------------------------
-R15#sh crypto pki certificates
+R15#sh crypto pki certificates          ----------Для IPSec использовать CA и сертификаты.
 Certificate
   Status: Available
   Certificate Serial Number (hex): 06
@@ -318,7 +319,7 @@ crypto pki trustpoint otus
  rsakeypair R18KEY
 ---------------------------------------------------------------
 R18#sh crypto pki certificates
-Certificate
+Certificate                                                    ----------Для IPSec использовать CA и сертификаты.
   Status: Available
   Certificate Serial Number (hex): 03
   Certificate Usage: General Purpose
@@ -388,7 +389,7 @@ interface Tunnel456
  tunnel key 200
  tunnel protection ipsec profile TUN456                       -----------Настроите DMVPN поверх IPSec между Москва и Чокурдах, Лабытнанги
 -------------------------------------------------------------
-R1#sh crypto pki certificates
+R1#sh crypto pki certificates                                 ----------Для IPSec использовать CA и сертификаты.
 Certificate
   Status: Available
   Certificate Serial Number (hex): 04
@@ -499,7 +500,7 @@ interface Tunnel456
  tunnel key 200
  tunnel protection ipsec profile TUN456                     -----------Настроите DMVPN поверх IPSec между Москва и Чокурдах, Лабытнанги
 ------------------------------------------------------------
-R2#sh crypto pki certificates
+R2#sh crypto pki certificates                               ----------Для IPSec использовать CA и сертификаты.
 Certificate
   Status: Available
   Certificate Serial Number (hex): 05
@@ -576,7 +577,7 @@ ip domain name otus.lab
 ip host ca 192.168.6.1
 ip host ca.otus.lab 192.168.6.1
 
-crypto pki server otus
+crypto pki server otus          ----------Для IPSec использовать CA и сертификаты.
  redundancy
  no database archive
  issuer-name cn=otus
@@ -595,4 +596,5 @@ ntp update-calendar
 Настроил GRE поверх IPSec между офисами Москва и С.-Петербург.
 Настроил DMVPN поверх IPSec между Москва и Чокурдах, Лабытнанги.
 Все узлы в офисах в лабораторной работе имеют IP связность.
+Для IPSec использовал CA и сертификаты.
 
